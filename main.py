@@ -26,10 +26,10 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
-    data = str(msg.payload).split(',')
+    #print(msg.topic+" "+str(msg.payload))
+    #data = str(msg.payload).split(',')
     jsonData = json.loads(msg.payload)
-    # print(jsonData)
+    print(jsonData)
     # print("Customer ID {}".format(jsonData["DevEUI_uplink"]["CustomerID"]))
     # print("Device ID {}".format(jsonData["DevEUI_uplink"]["DevEUI"]))
     # print("Pay Load {}".format(jsonData["DevEUI_uplink"]["payload_hex"]))
@@ -40,7 +40,7 @@ def on_message(client, userdata, msg):
     deviceID = jsonData["DevEUI_uplink"]["CustomerID"]
     print("Temperature {}".format(temperature))
     print("dew point {}".format(dewpoint))
-    add_device_data(deviceID,temperature,dewpoint)
+    add_device_data(deviceID, temperature, dewpoint)
 
 
 
@@ -64,7 +64,7 @@ def add_device_data(deviceID, temperature, dewpoint):
 
 mongo_client = pymongo.MongoClient("mongodb://Optimho:Blackmamba#1968@li2078-226.members.linode.com/admin")
 print('Hello')
-print(mongo_client.database_names())
+print(mongo_client.list_database_names())
 db = mongo_client['IoT']
 device = db['device']
 
