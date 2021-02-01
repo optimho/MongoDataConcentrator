@@ -10,6 +10,17 @@ import pymongo
 import binascii
 import struct
 import datetime
+import logging
+from systemdlogging.toolbox import init_systemd_logging
+
+# This one line in most cases would be enough.
+# By default it attaches systemd logging handler to a root Python logger.
+init_systemd_logging()  # Returns True if initialization went fine.
+
+# Now you can use logging as usual.
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 IP = '172.105.169.226'
 RDNS = 'li2078-226.members.linode.com'
@@ -29,7 +40,7 @@ def on_message(client, userdata, msg):
     #print(msg.topic+" "+str(msg.payload))
     #data = str(msg.payload).split(',')
     jsonData = json.loads(msg.payload)
-    print(jsonData)
+    logger.info('Jason Data ', jsonData)
     # print("Customer ID {}".format(jsonData["DevEUI_uplink"]["CustomerID"]))
     # print("Device ID {}".format(jsonData["DevEUI_uplink"]["DevEUI"]))
     # print("Pay Load {}".format(jsonData["DevEUI_uplink"]["payload_hex"]))
@@ -38,8 +49,8 @@ def on_message(client, userdata, msg):
     pay_load = binascii.unhexlify(pay_load)
     temperature, dewpoint = struct.unpack('ff', pay_load)
     deviceID = jsonData["DevEUI_uplink"]["CustomerID"]
-    print("Temperature {}".format(temperature))
-    print("dew point {}".format(dewpoint))
+    logger.info("Temperature {}".format(temperature))
+    logger.info("dew point {}".format(dewpoint))
     add_device_data(deviceID, temperature, dewpoint)
 
 
@@ -66,6 +77,7 @@ mongo_client = pymongo.MongoClient("mongodb://Optimho:Blackmamba#1968@li2078-226
 print('Hello')
 print(mongo_client.list_database_names())
 db = mongo_client['IoT']
+
 device = db['device']
 
 client = mqtt.Client()
