@@ -72,19 +72,25 @@ def add_device_data(deviceID, temperature, dewpoint):
     }
     return device.insert_one(document)
 
+try:
+    mongo_client = pymongo.MongoClient("mongodb://Optimho:Blackmamba#1968@li2078-226.members.linode.com/admin")
+except Exception:
+    logger.exception('Would Not connect to MQTT Server')
 
-mongo_client = pymongo.MongoClient("mongodb://Optimho:Blackmamba#1968@li2078-226.members.linode.com/admin")
-print('Hello')
-print(mongo_client.list_database_names())
+logger.info(mongo_client.list_database_names())
 db = mongo_client['IoT']
-
 device = db['device']
 
-client = mqtt.Client()
+try:
+    client = mqtt.Client()
+except Exception:
+    logger.exception('Would Not connect to MQTT Server')
+
 client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect("li2078-226.members.linode.com", 1883)
+
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
